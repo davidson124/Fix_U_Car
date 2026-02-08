@@ -1,6 +1,8 @@
 //It handles the logic of authentication requests (registration, login, logout).
 import User from '../models/User.model.js';
 import { hashPassword, comparePassword } from '../utils/hashPassword.js';
+import generateToken from '../utils/generateToken.js';
+
 
 export const login = async (req, res) => {
     try{
@@ -25,14 +27,16 @@ export const login = async (req, res) => {
                 msg: 'Invalid password'
             });
         }
+        const token = generateToken(user);
         res.status(200).json({
             msg:'Login successful',
-        user:
-        {
-            id: user._id,
-            name: user.name,
-            role: user.role
-        } })
+            token,
+            user:{
+                id: user._id,
+                name: user.name,
+                role: user.role
+            }
+        });
     }catch(error){
         console.error(error);
         res.status(500).json({
@@ -75,3 +79,6 @@ export const register = async (req, res) => {
         });
     }
 };
+
+
+
