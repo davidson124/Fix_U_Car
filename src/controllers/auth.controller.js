@@ -27,10 +27,7 @@ export const login = async (req, res) => {
                 msg: 'Invalid password'
             });
         }
-        const token = generateToken({
-            uid: user._id,
-            role: user.role
-        });
+        const token = generateToken(user);
         res.status(200).json({
             msg:'Login successful',
             token,
@@ -39,6 +36,7 @@ export const login = async (req, res) => {
                 name: user.name,
                 role: user.role
             }
+            
         });
     }catch(error){
         console.error(error);
