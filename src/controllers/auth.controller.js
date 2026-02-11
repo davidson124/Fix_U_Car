@@ -14,7 +14,7 @@ export const login = async (req, res) => {
             });
         }
         //Find user to email
-        const user = await User.findOne({ email });
+        const user = await User.findOne({email});
         if(!user){
             return res.status(404).json({
                 msg: 'User not found'
@@ -36,8 +36,8 @@ export const login = async (req, res) => {
                 name: user.name,
                 role: user.role
             }
-            
         });
+        console.log(user);
     }catch(error){
         console.error(error);
         res.status(500).json({
@@ -48,7 +48,7 @@ export const login = async (req, res) => {
 
 export const register = async (req, res) => {
     try{
-        const { name, email, password, cellphoneNumber, role } = req.body;
+        const { name, email, password, cellphoneNumber } = req.body;
         if(!name || !email || !password || !cellphoneNumber ){
             return res.status(400).json({
                 msg:'All fields are required'
@@ -67,12 +67,13 @@ export const register = async (req, res) => {
             email,
             password: hashedPassword,
             cellphoneNumber,
-            role
+            role: 'USER'
         });
         await user.save();
         res.status(201).json({
             msg:'User registered successfully'
         });
+        
     }catch(error){
         console.error(error);
         res.status(500).json({
