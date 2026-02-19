@@ -1,5 +1,6 @@
 import Message from '../models/message.model.js';
 import User from '../models/User.model.js';
+import Conversation from '../models/conversations.model.js'
 export const sendMessage = async (req,res)=>{
     try{
         const {content, receiverId}=req.body;
@@ -13,22 +14,37 @@ export const sendMessage = async (req,res)=>{
         }
         //If Admin -> Notify which user they are responding to
         if(req.user.role==='ADMIN'){
-            receiver = await User.findOne(receiverId);
+            receiver = await User.findById(receiverId);
         }
         if(!receiver){
             return res.status(404).json({msg:'Receiver no found'}) 
         }
-        const message =new Message({
+        //Find existing conversation
+        let conversation = await Conversation.findOne({
+            participants: {$all: [req.user._id, receiver._id]}
+        });
+        //Conversation doesn't exist, so, make it.
+        if(!conversation){
+            conversation = new Conversation.create({
+                participants: [req.user._id, receiver._id]
+            });
+        }
+        // Create Message
+        const message = await Message.create({
+            content,
             sender: req.user._id,
             receiver: receiver._id,
-            content,
-            type: req.user.role === 'ADMIN'?'ADMIN_NOTIFICATION':'USER_MESSAGE'
+            conversation: conversation._id
         });
-        await message.save();
+        //Update last message
+        conversation.lastMessage = message._id;
+        await conversation.save();
+
         res.status(201).json({msg:'Message sent successfully'});
+
     }catch(error){
         console.error(error);
-        res.statud(500).json({msg:'Server error'});
+        res.status(500).json({msg:'Server error'});
     }
 };
 export const getMyMessage=async(req, res)=>{

@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.routes.js';
 import testRoutes from './routes/test.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import messagesRoutes from './routes/messages.routes.js';
+import conversationRoutes from './routes/conversation.route.js';
 import User from './models/User.model.js'
 
 const app = express();
@@ -18,6 +19,7 @@ app.use('/api/v1/test', testRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/messages', messagesRoutes);
+app.use('/api/v1/conversations', conversationRoutes);
 
 
 app.listen(PORT, ()=>{
